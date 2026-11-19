@@ -19,6 +19,7 @@ Develop a Text class for an SMS Gateway that supports text concatenation, equali
 - Self-assignment protection
 - Deep copying
 - C++17 copy elision
+- Performance measurement using chrono
 
 ## Algorithm
 
@@ -31,7 +32,7 @@ Develop a Text class for an SMS Gateway that supports text concatenation, equali
 7. Overload `<<` to display text.
 8. Implement a destructor to release allocated memory.
 9. Test empty messages, long messages, copying, assignment, and chained concatenation.
-10. Verify that all dynamically allocated memory is released.
+10. Verify that dynamically allocated memory is released.
 
 ## Pseudocode
 
@@ -185,6 +186,71 @@ The standard C++ `std::string` class provides built-in concatenation, comparison
 
 Using `std::string` is generally safer and more convenient for real-world applications. The custom Text class is implemented here to demonstrate operator overloading and manual dynamic memory management.
 
+## Performance Experiment – Custom Text vs std::string
+
+### Objective
+
+To compare the execution time of the custom Text class and the standard C++ `std::string` class during repeated string concatenation.
+
+### Experimental Configuration
+
+| Parameter | Value |
+|---|---|
+| Programming language | C++ |
+| Standard | C++17 |
+| Compiler optimization | `-O2` |
+| Iterations | 100,000 |
+| Custom implementation | Text class |
+| Standard implementation | `std::string` |
+| Timing method | `std::chrono::steady_clock` |
+
+### Experimental Procedure
+
+1. Create two Text objects containing fixed messages.
+2. Create two equivalent `std::string` objects.
+3. Perform 100,000 concatenation operations using the custom Text class.
+4. Measure the execution time.
+5. Perform 100,000 concatenation operations using `std::string`.
+6. Measure the execution time.
+7. Repeat the experiment five times.
+8. Calculate the average execution time for both implementations.
+
+### Actual Experimental Results
+
+| Run | Custom Text (ms) | std::string (ms) |
+|---|---:|---:|
+| 1 | 12.0794 | 7.0690 |
+| 2 | 13.0122 | 6.3893 |
+| 3 | 12.7569 | 6.2781 |
+| 4 | 12.5964 | 6.5713 |
+| 5 | 15.7835 | 6.8332 |
+| **Average** | **13.2457** | **6.6282** |
+
+### Observations
+
+- Both implementations completed 100,000 concatenation operations.
+- The checksum was consistently 3,200,000 across all five runs.
+- The custom Text class recorded an average execution time of 13.2457 ms.
+- The standard `std::string` implementation recorded an average execution time of 6.6282 ms.
+- The custom implementation required additional memory allocation and copying operations.
+- `std::string` performed better in this particular experiment.
+
+### Performance Analysis
+
+The custom Text class creates a temporary combined character buffer during concatenation. It then allocates another buffer while constructing the resulting Text object.
+
+This additional allocation and copying contributes to its higher execution time.
+
+The standard `std::string` implementation uses an optimized library implementation and performed better in the measured experiment.
+
+The execution times may vary depending on the processor, compiler, optimization settings, and system workload.
+
+### Conclusion of Performance Experiment
+
+The standard `std::string` implementation demonstrated better performance than the custom Text class in this experiment. The comparison highlights the importance of efficient memory allocation and copying in string operations.
+
 ## Result
 
 The Text class was successfully implemented and tested. Concatenation, comparison, copying, assignment, self-assignment, empty messages, long messages, and chained addition were verified.
+
+The performance experiment was also completed successfully. The results demonstrated that the standard `std::string` implementation was faster than the custom Text class under the tested conditions.
